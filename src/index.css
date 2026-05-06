@@ -13,6 +13,7 @@
   --muted: #e0f2ef;
   --border: #badcd2;
   --danger: #ff4b4b;
+  --success: #22c55e;
   --chart-1: #014b35;
   --chart-2: #45d5aa;
   --chart-3: #0f3b2f;
@@ -29,6 +30,7 @@
   --muted: #13211d;
   --border: #2b4e44;
   --danger: #ff6b6b;
+  --success: #4ade80;
   --chart-1: #7cf6d5;
   --chart-2: #00ffb3;
   --chart-3: #d8fff2;
@@ -60,8 +62,19 @@ body {
 .glass-card {
   background: var(--card);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  box-shadow: 0 14px 34px rgba(1, 75, 53, 0.14);
+  box-shadow:
+    0 4px 6px rgba(1, 75, 53, 0.04),
+    0 14px 34px rgba(1, 75, 53, 0.14),
+    0 1px 0px rgba(255, 255, 255, 0.6) inset;
+}
+
+.dark .glass-card {
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.2),
+    0 14px 34px rgba(0, 0, 0, 0.35),
+    0 1px 0px rgba(255, 255, 255, 0.04) inset;
 }
 
 .skip-link {
@@ -88,23 +101,149 @@ body {
   color: color-mix(in srgb, var(--foreground), white 35%);
 }
 
+.dark .theme-muted {
+  color: color-mix(in srgb, var(--foreground), var(--background) 45%);
+}
+
 .theme-input {
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--muted), white 35%);
   color: var(--foreground);
+  transition:
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-input:hover {
+  border-color: var(--primary-strong);
 }
 
 .theme-btn-primary {
   background: linear-gradient(12deg, #014b35, #45d5aa);
   color: white;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition:
+    background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 100ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.theme-btn-primary:hover {
+.theme-btn-primary:hover:not(:disabled) {
   background: linear-gradient(12deg, #013625, #179c74);
+  box-shadow: 0 4px 14px rgba(69, 213, 170, 0.28);
+}
+
+.theme-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .theme-btn-ghost {
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--card), white 18%);
   color: var(--foreground);
+  font-weight: 500;
+  transition:
+    background 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-btn-ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--muted), transparent 20%);
+  border-color: var(--primary-strong);
+}
+
+.theme-btn-ghost:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+@keyframes stepFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-enter {
+  animation: stepFadeSlide 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Remove number input arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Range slider styling */
+input[type='range'] {
+  height: 6px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--foreground);
+  border: 2px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(1, 75, 53, 0.2);
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 10px rgba(69, 213, 170, 0.35);
+}
+
+/* Recharts tooltip theming */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(1, 75, 53, 0.16) !important;
+  backdrop-filter: blur(8px) !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 14px !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label {
+  font-weight: 600 !important;
+  color: var(--foreground) !important;
+  margin-bottom: 4px !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item {
+  color: var(--foreground) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-name,
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-separator,
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-value {
+  color: var(--foreground) !important;
+}
+
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
 }

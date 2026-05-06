@@ -29,6 +29,7 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
   )
 
   const passiveIncomeEstimate = (horizonProjection.totalValue * 0.04) / 12
+  const isFireGoal = state.objectives.goal === 'fire'
 
   const items = [
     {
@@ -39,10 +40,9 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
       label: 'Retorno total estimado',
       value: formatEuro(horizonProjection.returns)
     },
-    {
-      label: 'Anos ate FIRE',
-      value: plan.yearsToFire ? `${plan.yearsToFire}` : '-'
-    },
+    ...(isFireGoal && plan.yearsToFire
+      ? [{ label: 'Anos até FIRE', value: `${plan.yearsToFire}` }]
+      : []),
     {
       label: 'Renda passiva mensal estimada',
       value: formatEuro(passiveIncomeEstimate)
@@ -52,22 +52,38 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
       value: `${ratio.toFixed(2)}x`
     },
     {
-      label: 'Se comecasses 5 anos antes',
+      label: 'Se começasses 5 anos antes',
       value: `${formatEuro(earlyStartValue)} (${formatPercent(plan.annualReturn)} a.a.)`
     }
   ]
 
   return (
-    <section className="rounded-xl border border-[#badcd2] bg-white/90 p-4 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
-      <h3 className="theme-heading text-lg font-semibold">Resumo e KPIs</h3>
-      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
+    <section className="rounded-xl border border-[#badcd2] bg-white/90 px-5 py-5 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
+      <h3 className="theme-heading mb-5 text-sm font-bold uppercase tracking-[0.07em]">
+        Indicadores-chave
+      </h3>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {items.map((item, i) => (
           <article
             key={item.label}
-            className="rounded-xl border border-[#badcd2] bg-[#e0f2ef]/60 p-4 dark:border-[#2b4e44] dark:bg-[#13211d]"
+            className="group relative overflow-hidden rounded-xl border border-[#badcd2]/80
+                       bg-gradient-to-br from-[#e0f2ef]/70 to-[#e0f2ef]/40 p-4
+                       transition-shadow duration-200 hover:shadow-[0_4px_14px_rgba(1,75,53,0.12)]
+                       dark:border-[#2b4e44] dark:from-[#13211d] dark:to-[#0f1715]"
           >
-            <p className="text-xs uppercase tracking-wide text-[#235a4a] dark:text-[#c7f8e9]">{item.label}</p>
-            <p className="mt-2 text-xl font-semibold text-[#014b35] dark:text-[#f3fff9]">{item.value}</p>
+            <span
+              className="absolute right-3 top-2 select-none text-5xl font-black
+                         leading-none text-[#014b35]/5 dark:text-[#00ffb3]/5"
+              aria-hidden="true"
+            >
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <p className="relative text-xs font-semibold uppercase tracking-[0.07em] text-[#235a4a] dark:text-[#c7f8e9]">
+              {item.label}
+            </p>
+            <p className="tabular-nums relative mt-3 text-2xl font-extrabold leading-none tracking-[-0.02em] text-[#014b35] dark:text-[#f3fff9]">
+              {item.value}
+            </p>
           </article>
         ))}
       </div>

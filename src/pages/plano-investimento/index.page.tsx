@@ -14,12 +14,14 @@ function PlanoInvestimentoPage() {
       <a href="#main-content" className="skip-link">
         Saltar para conteudo principal
       </a>
-      <header className="border-b border-[#45d5aa]/35 bg-black/35 px-4 py-4 md:px-6">
-        <div className="mx-auto flex max-w-4xl items-start justify-between gap-3">
+      <header className="border-b border-[#45d5aa]/25 bg-black/30 px-4 py-5 backdrop-blur-sm md:px-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-white">Plano de Investimento OGI</h1>
-            <p className="mt-1 text-sm text-[#d8fff2]/95">
-              Wizard de perfilagem de investidor, 100% client-side.
+            <h1 className="text-xl font-bold tracking-[-0.02em] text-white md:text-2xl">
+              Plano de Investimento OGI
+            </h1>
+            <p className="mt-0.5 text-xs font-medium tracking-[0.03em] text-[#d8fff2]/80 md:text-sm">
+              Wizard de perfilagem — 100% client-side
             </p>
           </div>
           <ThemeToggle />

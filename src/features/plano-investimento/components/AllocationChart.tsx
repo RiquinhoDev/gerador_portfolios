@@ -14,15 +14,15 @@ const ALLOCATION_META = [
   },
   {
     key: 'bonds' as const,
-    label: 'Obrigacoes/Bonds',
+    label: 'Obrigações/Bonds',
     color: 'var(--chart-2)',
     examples: 'AGGH, EUNA'
   },
   {
     key: 'stocks' as const,
-    label: 'Acoes Individuais',
+    label: 'Ações Individuais',
     color: 'var(--chart-1)',
-    examples: 'Selecao propria + comunidade OGI'
+    examples: 'Seleção própria + comunidade OGI'
   },
   {
     key: 'gold' as const,
@@ -40,9 +40,20 @@ const ALLOCATION_META = [
     key: 'highRisk' as const,
     label: 'Alto Risco',
     color: 'var(--chart-4)',
-    examples: 'BTC, ETH (so percentual pequeno)'
+    examples: 'BTC, ETH (só percentual pequeno)'
   }
 ]
+
+function PieTooltipContent({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number }> }) {
+  if (!active || !payload?.length) return null
+  const item = payload[0]
+  return (
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 shadow-lg backdrop-blur-sm">
+      <p className="text-sm font-semibold text-[var(--foreground)]">{item.name}</p>
+      <p className="tabular-nums mt-0.5 text-sm font-bold text-[var(--foreground)]">{item.value}%</p>
+    </div>
+  )
+}
 
 export function AllocationChart({ allocation }: AllocationChartProps) {
   const data = ALLOCATION_META.map((item) => ({
@@ -53,10 +64,12 @@ export function AllocationChart({ allocation }: AllocationChartProps) {
   })).filter((entry) => entry.value > 0)
 
   return (
-    <section className="rounded-xl border border-[#badcd2] bg-white/90 p-4 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
-      <h3 className="theme-heading text-lg font-semibold">Alocacao de ativos</h3>
-      <div className="mt-3 grid gap-4 md:grid-cols-2">
-        <div className="h-72 w-full">
+    <section className="rounded-xl border border-[#badcd2] bg-white/90 px-5 py-5 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
+      <h3 className="theme-heading mb-4 text-sm font-bold uppercase tracking-[0.07em]">
+        Alocação de ativos
+      </h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="h-72 w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -71,29 +84,36 @@ export function AllocationChart({ allocation }: AllocationChartProps) {
                   <Cell key={entry.name} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `${value}%`} />
+              <Tooltip content={<PieTooltipContent />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         <div className="space-y-2">
           {data.map((item) => (
-            <details
+            <div
               key={item.name}
-              className="rounded-lg border border-[#badcd2] bg-[#e0f2ef]/65 p-3 dark:border-[#2b4e44] dark:bg-[#13211d]"
+              className="flex items-center justify-between rounded-lg border border-[#badcd2]/70
+                         bg-[#e0f2ef]/50 px-3 py-2.5 transition-colors duration-150
+                         hover:bg-[#e0f2ef] dark:border-[#2b4e44] dark:bg-[#13211d]/80
+                         dark:hover:bg-[#1a2e28]"
             >
-              <summary className="flex cursor-pointer items-center justify-between text-sm font-medium text-[#014b35] dark:text-[#f3fff9]">
-                <span className="flex items-center gap-2">
-                  <span
-                    className="inline-block h-3 w-3 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="h-2.5 w-2.5 flex-shrink-0 rounded-full shadow-sm"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-sm font-medium text-[#014b35] dark:text-[#f3fff9]">
                   {item.name}
                 </span>
-                <span>{item.value}%</span>
-              </summary>
-              <p className="mt-2 text-sm text-[#235a4a] dark:text-[#c7f8e9]">Exemplos: {item.examples}</p>
-            </details>
+              </div>
+              <div className="text-right">
+                <span className="tabular-nums text-sm font-bold text-[#014b35] dark:text-[#f3fff9]">
+                  {item.value}%
+                </span>
+                <p className="mt-0.5 text-xs text-[#235a4a] dark:text-[#c7f8e9]">{item.examples}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>

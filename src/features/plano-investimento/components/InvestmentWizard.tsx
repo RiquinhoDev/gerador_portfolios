@@ -95,88 +95,96 @@ export function InvestmentWizard() {
 
   return (
     <main id="main-content" className="mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-10">
-      <section className="glass-card rounded-2xl p-4 md:p-8">
+      <section className="glass-card rounded-2xl p-5 md:p-10">
         {!isResultsStep && <ProgressBar currentStep={step} totalSteps={WIZARD_TOTAL_STEPS} />}
 
         {step === 1 && (
-          <StepPersonalData
-            value={state.userData}
-            errors={personalDataErrors}
-            onChange={(value) => {
-              setState((current) => ({ ...current, userData: value }))
-              if (Object.keys(personalDataErrors).length) validatePersonalData(value)
-            }}
-          />
+          <div className="step-enter" key="step-1">
+            <StepPersonalData
+              value={state.userData}
+              errors={personalDataErrors}
+              onChange={(value) => {
+                setState((current) => ({ ...current, userData: value }))
+                if (Object.keys(personalDataErrors).length) validatePersonalData(value)
+              }}
+            />
+          </div>
         )}
 
         {step === 2 && (
-          <StepObjectives
-            value={state.objectives}
-            errors={objectivesErrors}
-            onChange={(value) => {
-              setState((current) => ({ ...current, objectives: value }))
-              if (Object.keys(objectivesErrors).length) validateObjectives(value)
-            }}
-          />
+          <div className="step-enter" key="step-2">
+            <StepObjectives
+              value={state.objectives}
+              errors={objectivesErrors}
+              onChange={(value) => {
+                setState((current) => ({ ...current, objectives: value }))
+                if (Object.keys(objectivesErrors).length) validateObjectives(value)
+              }}
+            />
+          </div>
         )}
 
         {step === 3 && (
-          <StepRiskTolerance
-            answers={state.riskAssessment.answers}
-            currentQuestionIndex={riskQuestionIndex}
-            error={riskError}
-            onQuestionChange={setRiskQuestionIndex}
-            onAnswerChange={(questionIndex, points) => {
-              setState((current) => {
-                const nextAnswers = [...current.riskAssessment.answers]
-                nextAnswers[questionIndex] = points
-                return {
-                  ...current,
-                  riskAssessment: {
-                    ...current.riskAssessment,
-                    answers: nextAnswers,
-                    rawScore: calculateRawRiskScore(nextAnswers)
+          <div className="step-enter" key="step-3">
+            <StepRiskTolerance
+              answers={state.riskAssessment.answers}
+              currentQuestionIndex={riskQuestionIndex}
+              error={riskError}
+              onQuestionChange={setRiskQuestionIndex}
+              onAnswerChange={(questionIndex, points) => {
+                setState((current) => {
+                  const nextAnswers = [...current.riskAssessment.answers]
+                  nextAnswers[questionIndex] = points
+                  return {
+                    ...current,
+                    riskAssessment: {
+                      ...current.riskAssessment,
+                      answers: nextAnswers,
+                      rawScore: calculateRawRiskScore(nextAnswers)
+                    }
                   }
-                }
-              })
+                })
 
-              if (riskQuestionIndex < RISK_QUESTIONS.length - 1) {
-                setRiskQuestionIndex((current) => current + 1)
-              }
-              setRiskError('')
-            }}
-          />
+                if (riskQuestionIndex < RISK_QUESTIONS.length - 1) {
+                  setRiskQuestionIndex((current) => current + 1)
+                }
+                setRiskError('')
+              }}
+            />
+          </div>
         )}
 
         {step === 4 && (
-          <ResultsPanel
-            state={{ ...state, riskAssessment: { ...state.riskAssessment, rawScore } }}
-            plan={investmentPlan}
-            onReset={() => {
-              setState(INITIAL_WIZARD_STATE)
-              setStep(1)
-              setRiskQuestionIndex(0)
-              setPersonalDataErrors({})
-              setObjectivesErrors({})
-              setRiskError('')
-            }}
-          />
+          <div className="step-enter" key="step-4">
+            <ResultsPanel
+              state={{ ...state, riskAssessment: { ...state.riskAssessment, rawScore } }}
+              plan={investmentPlan}
+              onReset={() => {
+                setState(INITIAL_WIZARD_STATE)
+                setStep(1)
+                setRiskQuestionIndex(0)
+                setPersonalDataErrors({})
+                setObjectivesErrors({})
+                setRiskError('')
+              }}
+            />
+          </div>
         )}
 
         {!isResultsStep && (
-          <footer className="mt-8 flex items-center justify-between">
+          <footer className="mt-10 flex items-center justify-between gap-4">
             <button
               type="button"
               onClick={handlePreviousStep}
               disabled={step === 1}
-              className="theme-btn-ghost rounded-lg px-4 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa] disabled:cursor-not-allowed disabled:opacity-50"
+              className="theme-btn-ghost rounded-lg px-5 py-2.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Anterior
             </button>
             <button
               type="button"
               onClick={handleNextStep}
-              className="theme-btn-primary rounded-lg px-4 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+              className="theme-btn-primary rounded-lg px-6 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
             >
               Seguinte
             </button>

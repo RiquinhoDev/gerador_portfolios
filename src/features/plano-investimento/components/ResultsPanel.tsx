@@ -11,74 +11,107 @@ interface ResultsPanelProps {
   onReset: () => void
 }
 
+const GOAL_LABELS: Record<string, string> = {
+  accumulation: 'Acumulação de capital',
+  passive_income: 'Rendimento passivo',
+  fire: 'Liberdade financeira (FIRE)'
+}
+
 export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
   const { userData, objectives, riskAssessment } = state
   const profileLabel = PROFILE_LABELS[plan.profile.adjustedProfile]
   const profileDescription = PROFILE_DESCRIPTIONS[plan.profile.adjustedProfile]
+  const isFireGoal = objectives.goal === 'fire'
+
+  const summaryRows: [string, string][] = [
+    ['Nome', userData.name || 'Sem nome'],
+    ['Idade', String(userData.age ?? '-')],
+    ['Objetivo', objectives.goal ? (GOAL_LABELS[objectives.goal] ?? objectives.goal) : '-'],
+    ['Horizonte', `${objectives.horizonYears} anos`],
+    ['Investimento mensal', `${userData.monthlyInvestment ?? '-'} EUR`],
+    ['Retorno anual efetivo', formatPercent(plan.annualReturn)],
+    ...(isFireGoal
+      ? [
+          ['Meta FIRE', plan.fireNumber ? formatEuro(plan.fireNumber) : '-'] as [string, string],
+          ['Anos estimados até FIRE', String(plan.yearsToFire ?? '-')] as [string, string]
+        ]
+      : [])
+  ]
 
   return (
     <div className="space-y-4">
-      <h2 className="theme-heading text-2xl font-semibold">Resultado do teu plano</h2>
-      <p className="theme-muted text-sm">Perfil, alocacao e projecoes ja calculadas.</p>
-
-      <section className="rounded-xl border border-[#1ea37a] bg-gradient-to-r from-[#014b35] to-[#179c74] p-4 text-white">
-        <p className="text-xs uppercase tracking-wide text-[#d8fff2]">Perfil final</p>
-        <p className="mt-1 text-2xl font-bold">{profileLabel}</p>
-        <p className="mt-2 text-sm text-[#effff8]">{profileDescription}</p>
-        <p className="mt-3 text-sm text-[#d8fff2]">
-          Score base: {riskAssessment.rawScore}/20 | Perfil base:{' '}
-          {PROFILE_LABELS[plan.profile.rawProfile]}
+      <div>
+        <h2 className="theme-heading text-2xl font-bold leading-tight tracking-[-0.02em] md:text-3xl">
+          Resultado do teu plano
+        </h2>
+        <p className="theme-muted mt-2 text-sm leading-relaxed">
+          Perfil, alocação e projeções calculadas com base nas tuas respostas.
         </p>
+      </div>
+
+      <section className="rounded-2xl border border-[#1ea37a]/60 bg-gradient-to-br from-[#014b35] via-[#0a6645] to-[#179c74] p-6 text-white shadow-[0_8px_24px_rgba(1,75,53,0.3)]">
+        <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#d8fff2]/80">
+          Perfil final
+        </p>
+        <p className="mt-2 text-3xl font-extrabold tracking-[-0.02em]">{profileLabel}</p>
+        <p className="mt-3 max-w-prose text-sm leading-relaxed text-[#effff8]/90">
+          {profileDescription}
+        </p>
+        <div className="mt-4 border-t border-white/15 pt-4">
+          <p className="text-xs text-[#d8fff2]/70">
+            Score base:{' '}
+            <strong className="text-white">{riskAssessment.rawScore}/20</strong>
+            {' · '}Perfil base:{' '}
+            <strong className="text-white">{PROFILE_LABELS[plan.profile.rawProfile]}</strong>
+          </p>
+        </div>
         {plan.profile.adjustments.length > 0 && (
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[#effff8]">
+          <ul className="mt-3 space-y-1 text-xs text-[#effff8]/80">
             {plan.profile.adjustments.map((adjustment) => (
-              <li key={adjustment}>{adjustment}</li>
+              <li key={adjustment} className="flex items-start gap-2">
+                <span className="mt-0.5 text-[#00ffb3]">·</span>
+                {adjustment}
+              </li>
             ))}
           </ul>
         )}
       </section>
 
-      <section className="grid gap-3 rounded-xl border border-[#badcd2] bg-white/90 p-4 md:grid-cols-2 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Nome:</strong> {userData.name || 'Sem nome'}
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Idade:</strong> {userData.age ?? '-'}
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Objetivo:</strong> {objectives.goal ?? '-'}
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Horizonte:</strong> {objectives.horizonYears} anos
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Investimento mensal:</strong> {userData.monthlyInvestment ?? '-'} EUR
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Retorno anual efetivo:</strong> {formatPercent(plan.annualReturn)}
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Meta FIRE:</strong> {plan.fireNumber ? formatEuro(plan.fireNumber) : '-'}
-        </p>
-        <p className="text-sm text-[#014b35] dark:text-[#f3fff9]">
-          <strong>Anos estimados ate FIRE:</strong> {plan.yearsToFire ?? '-'}
-        </p>
+      <section className="rounded-xl border border-[#badcd2] bg-white/90 px-5 py-5 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
+        <h3 className="theme-heading mb-4 text-sm font-bold uppercase tracking-[0.07em]">
+          Resumo
+        </h3>
+        <div className="grid gap-x-6 gap-y-0 md:grid-cols-2">
+          {summaryRows.map(([label, val]) => (
+            <div
+              key={label}
+              className="flex items-baseline justify-between gap-2 border-b border-[#badcd2]/50 py-2.5 last:border-0 dark:border-[#2b4e44]/50"
+            >
+              <span className="text-xs font-medium text-[#235a4a] dark:text-[#a0d8c8]">{label}</span>
+              <span className="tabular-nums text-sm font-semibold text-[#014b35] dark:text-[#f3fff9]">
+                {val}
+              </span>
+            </div>
+          ))}
+        </div>
       </section>
 
       <AllocationChart allocation={plan.allocation} />
       <ProjectionChart projections={plan.projections} fireNumber={plan.fireNumber} />
       <KpiCards state={state} plan={plan} />
 
-      <section className="rounded-xl border border-[#badcd2] bg-[#e0f2ef]/70 p-4 dark:border-[#2b4e44] dark:bg-[#13211d]">
-        <p className="text-sm text-[#014b35] dark:text-[#d8fff2]">
-          Nota legal: ferramenta educativa. Nao constitui aconselhamento financeiro.
+      <section className="rounded-xl border border-[#badcd2]/60 bg-[#e0f2ef]/40 px-5 py-4 dark:border-[#2b4e44]/60 dark:bg-[#13211d]/60">
+        <p className="text-xs leading-relaxed text-[#235a4a] dark:text-[#a0d8c8]">
+          <strong className="theme-heading">Nota legal:</strong> Esta ferramenta é educativa e não
+          constitui aconselhamento financeiro. Consulta um profissional qualificado antes de investir.
         </p>
       </section>
 
       <button
         type="button"
         onClick={onReset}
-        className="theme-btn-primary rounded-lg px-4 py-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+        className="theme-btn-primary mt-2 w-full rounded-xl px-6 py-3 text-sm
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa] sm:w-auto"
       >
         Refazer plano
       </button>

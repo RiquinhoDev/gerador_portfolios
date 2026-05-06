@@ -10,6 +10,23 @@ const config: Config = {
         lg: '12px',
         md: '10px',
         sm: '8px'
+      },
+      letterSpacing: {
+        financial: '-0.02em',
+        label: '0.06em'
+      },
+      lineHeight: {
+        heading: '1.2',
+        body: '1.6'
+      },
+      keyframes: {
+        stepFadeSlide: {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        }
+      },
+      animation: {
+        'step-enter': 'stepFadeSlide 220ms cubic-bezier(0.4, 0, 0.2, 1) both'
       }
     }
   },

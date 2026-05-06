@@ -1,16 +1,45 @@
 function HomePage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl items-center px-6 py-16">
-      <section className="w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-semibold text-slate-900">Gerador de Portfolios</h1>
-        <p className="mt-3 text-slate-600">
-          Base pronta. Wizard inicial de investimento ja esta disponivel.
+    <main
+      className="flex min-h-screen items-center justify-center px-6 py-16"
+      style={{
+        backgroundImage: "url('/assets/bg.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      <section className="glass-card w-full max-w-2xl rounded-2xl px-8 py-10 md:px-12 md:py-14">
+        <p className="theme-muted mb-3 text-xs font-semibold uppercase tracking-[0.08em]">
+          Planeamento financeiro pessoal
         </p>
+
+        <h1 className="theme-heading text-3xl font-bold leading-tight tracking-[-0.02em] md:text-4xl">
+          Gerador de Portfolios
+        </h1>
+
+        <p className="theme-muted mt-4 max-w-md text-base leading-relaxed">
+          Descobre o teu perfil de investidor e recebe um plano de alocação personalizado —
+          completamente no browser, sem enviar dados.
+        </p>
+
+        <div className="mt-8 h-px w-16 bg-[#45d5aa]/50" />
+
         <a
           href="/plano-investimento"
-          className="mt-5 inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="theme-btn-primary mt-8 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
         >
-          Abrir Plano de Investimento
+          Criar o meu plano
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M3 8h10M9 4l4 4-4 4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </a>
       </section>
     </main>
