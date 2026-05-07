@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Bash(yarn tsc *)",
+      "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(yarn build *)",
+      "Bash(ls \"/mnt/c/Users/User/Desktop/HUB Backups/Janeiro - 2025/Riquinho/api/Front/Comunidade/gerador_portfolios/\" 2>&1)"
     ]
   }
 }

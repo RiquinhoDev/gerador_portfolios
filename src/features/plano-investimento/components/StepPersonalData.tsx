@@ -71,7 +71,7 @@ export function StepPersonalData({ value, errors, onChange }: StepPersonalDataPr
         Dados pessoais
       </h2>
       <p className="theme-muted mt-2 text-sm leading-relaxed">
-        Preenche os dados para montar o plano base. Nada é enviado para backend.
+        Preenche os dados para montar o plano base.
       </p>
 
       <div className="mt-6 space-y-5">
@@ -106,7 +106,7 @@ export function StepPersonalData({ value, errors, onChange }: StepPersonalDataPr
         <NumberInput
           id="age"
           label="Idade"
-          helperText="Entre 18 e 80."
+          helperText="Entre 18 a 80 anos."
           value={value.age}
           onChange={(next) => onChange({ ...value, age: next })}
           error={errors.age}

@@ -112,7 +112,7 @@ export function StepObjectives({ value, errors, onChange }: StepObjectivesProps)
           </div>
         </div>
 
-        {value.goal === 'fire' && (
+        {(value.goal === 'fire' || value.goal === 'passive_income') && (
           <div className="space-y-2 rounded-xl border border-[#badcd2] bg-[#e0f2ef]/70 p-5 dark:border-[#2b4e44] dark:bg-[#13211d]">
             <label htmlFor="fire-target" className="theme-heading block text-sm font-semibold">
               Quanto queres receber por mês em renda passiva (EUR)

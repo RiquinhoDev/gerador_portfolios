@@ -5,6 +5,7 @@ import { calculateRawRiskScore, hasAllRiskAnswers } from '../lib/risk-scoring'
 import type { Objectives, UserData, WizardState } from '../types'
 import { ProgressBar } from './ProgressBar'
 import { ResultsPanel } from './ResultsPanel'
+import { StepIntro } from './StepIntro'
 import { StepObjectives } from './StepObjectives'
 import { StepPersonalData } from './StepPersonalData'
 import { StepRiskTolerance } from './StepRiskTolerance'
@@ -17,7 +18,7 @@ type ObjectivesErrors = {
 
 export function InvestmentWizard() {
   const [state, setState] = useState<WizardState>(INITIAL_WIZARD_STATE)
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
   const [riskQuestionIndex, setRiskQuestionIndex] = useState(0)
   const [personalDataErrors, setPersonalDataErrors] = useState<PersonalDataErrors>({})
   const [objectivesErrors, setObjectivesErrors] = useState<ObjectivesErrors>({})
@@ -54,8 +55,11 @@ export function InvestmentWizard() {
     const nextErrors: ObjectivesErrors = {}
 
     if (!value.goal) nextErrors.goal = 'Escolhe um objetivo principal.'
-    if (value.goal === 'fire' && (value.fireMonthlyTarget === null || value.fireMonthlyTarget <= 0)) {
-      nextErrors.fireMonthlyTarget = 'Para FIRE, define renda passiva mensal maior que 0.'
+    if (
+      (value.goal === 'fire' || value.goal === 'passive_income') &&
+      (value.fireMonthlyTarget === null || value.fireMonthlyTarget <= 0)
+    ) {
+      nextErrors.fireMonthlyTarget = 'Define a renda passiva mensal desejada (maior que 0).'
     }
 
     setObjectivesErrors(nextErrors)
@@ -90,13 +94,19 @@ export function InvestmentWizard() {
   }
 
   function handlePreviousStep() {
-    setStep((current) => Math.max(1, current - 1))
+    setStep((current) => Math.max(0, current - 1))
   }
 
   return (
-    <main id="main-content" className="mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-10">
-      <section className="glass-card rounded-2xl p-5 md:p-10">
-        {!isResultsStep && <ProgressBar currentStep={step} totalSteps={WIZARD_TOTAL_STEPS} />}
+    <main id="main-content" className="mx-auto max-w-4xl px-4 py-4 md:px-6 md:py-6">
+      <section className="glass-card rounded-2xl p-5 md:p-8">
+        {step > 0 && !isResultsStep && <ProgressBar currentStep={step} totalSteps={WIZARD_TOTAL_STEPS} />}
+
+        {step === 0 && (
+          <div className="step-enter" key="step-0">
+            <StepIntro />
+          </div>
+        )}
 
         {step === 1 && (
           <div className="step-enter" key="step-1">
@@ -161,7 +171,7 @@ export function InvestmentWizard() {
               plan={investmentPlan}
               onReset={() => {
                 setState(INITIAL_WIZARD_STATE)
-                setStep(1)
+                setStep(0)
                 setRiskQuestionIndex(0)
                 setPersonalDataErrors({})
                 setObjectivesErrors({})
@@ -172,22 +182,33 @@ export function InvestmentWizard() {
         )}
 
         {!isResultsStep && (
-          <footer className="mt-10 flex items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={handlePreviousStep}
-              disabled={step === 1}
-              className="theme-btn-ghost rounded-lg px-5 py-2.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Anterior
-            </button>
-            <button
-              type="button"
-              onClick={handleNextStep}
-              className="theme-btn-primary rounded-lg px-6 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
-            >
-              Seguinte
-            </button>
+          <footer className="mt-8 flex items-center justify-between gap-4">
+            {step === 0 ? (
+              <button
+                type="button"
+                onClick={handleNextStep}
+                className="theme-btn-primary ml-auto rounded-lg px-8 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+              >
+                Começar
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePreviousStep}
+                  className="theme-btn-ghost rounded-lg px-5 py-2.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+                >
+                  Anterior
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="theme-btn-primary rounded-lg px-6 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+                >
+                  Seguinte
+                </button>
+              </>
+            )}
           </footer>
         )}
       </section>

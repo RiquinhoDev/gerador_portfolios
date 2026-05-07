@@ -20,9 +20,6 @@ function PlanoInvestimentoPage() {
             <h1 className="text-xl font-bold tracking-[-0.02em] text-white md:text-2xl">
               Plano de Investimento OGI
             </h1>
-            <p className="mt-0.5 text-xs font-medium tracking-[0.03em] text-[#d8fff2]/80 md:text-sm">
-              Wizard de perfilagem — 100% client-side
-            </p>
           </div>
           <ThemeToggle />
         </div>
