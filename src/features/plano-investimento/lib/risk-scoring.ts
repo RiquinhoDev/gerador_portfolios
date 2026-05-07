@@ -23,17 +23,17 @@ export function computeAdjustedProfile(input: ProfileAdjustmentInput): ProfileRe
 
   if (input.age > 55) {
     adjustedProfile = moveProfile(adjustedProfile, -1)
-    adjustments.push('Idade acima de 55: perfil reduzido 1 nivel.')
+    adjustments.push('Idade acima de 55: perfil reduzido 1 nível.')
   }
 
   if (input.horizonYears < 5) {
     adjustedProfile = moveProfile(adjustedProfile, -1)
-    adjustments.push('Horizonte abaixo de 5 anos: perfil reduzido 1 nivel.')
+    adjustments.push('Horizonte abaixo de 5 anos: perfil reduzido 1 nível.')
   }
 
   if (input.goal === 'fire' && adjustedProfile === 'conservative') {
     adjustedProfile = 'moderate'
-    adjustments.push('Objetivo FIRE: perfil minimo ajustado para Moderado.')
+    adjustments.push('Objetivo FIRE: perfil mínimo ajustado para Moderado.')
   }
 
   return {

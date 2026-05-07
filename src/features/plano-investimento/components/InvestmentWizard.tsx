@@ -38,14 +38,14 @@ export function InvestmentWizard() {
   function validatePersonalData(value: UserData): boolean {
     const nextErrors: PersonalDataErrors = {}
 
-    if ((value.name ?? '').length > 50) nextErrors.name = 'Nome maximo 50 caracteres.'
-    if (value.age === null || value.age < 18 || value.age > 80) nextErrors.age = 'Idade deve ser 18-80.'
+    if ((value.name ?? '').length > 50) nextErrors.name = 'Nome máximo 50 caracteres.'
+    if (value.age === null || value.age < 18) nextErrors.age = 'Idade mínima: 18 anos.'
     if (value.monthlyIncome === null || value.monthlyIncome < 0)
-      nextErrors.monthlyIncome = 'Rendimento deve ser maior ou igual a 0.'
+      nextErrors.monthlyIncome = 'Rendimento deve ser igual ou superior a 0.'
     if (value.monthlyInvestment === null || value.monthlyInvestment < 25)
-      nextErrors.monthlyInvestment = 'Investimento mensal minimo 25 EUR.'
+      nextErrors.monthlyInvestment = 'Investimento mensal mínimo: 25 EUR.'
     if (value.currentCapital === null || value.currentCapital < 0)
-      nextErrors.currentCapital = 'Capital atual deve ser maior ou igual a 0.'
+      nextErrors.currentCapital = 'Capital atual deve ser igual ou superior a 0.'
 
     setPersonalDataErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
@@ -59,7 +59,7 @@ export function InvestmentWizard() {
       (value.goal === 'fire' || value.goal === 'passive_income') &&
       (value.fireMonthlyTarget === null || value.fireMonthlyTarget <= 0)
     ) {
-      nextErrors.fireMonthlyTarget = 'Define a renda passiva mensal desejada (maior que 0).'
+      nextErrors.fireMonthlyTarget = 'Define a renda passiva mensal desejada (valor superior a 0).'
     }
 
     setObjectivesErrors(nextErrors)
@@ -68,7 +68,7 @@ export function InvestmentWizard() {
 
   function validateRiskAnswers(answers: number[]): boolean {
     if (!hasAllRiskAnswers(answers)) {
-      setRiskError('Responde todas as 5 perguntas antes de continuar.')
+      setRiskError('Responde às 5 perguntas antes de continuar.')
       return false
     }
     setRiskError('')

@@ -8,39 +8,39 @@ interface AllocationChartProps {
 const ALLOCATION_META = [
   {
     key: 'globalETFs' as const,
-    label: 'ETFs Globais',
+    label: 'ETFs',
     color: 'var(--success)',
-    examples: 'VWCE, IWDA'
+    examples: 'Mundiais, tecnológicos, de setores'
   },
   {
     key: 'bonds' as const,
-    label: 'Obrigações/Bonds',
+    label: 'Obrigações',
     color: 'var(--chart-2)',
-    examples: 'AGGH, EUNA'
+    examples: 'Curto e longo prazo'
   },
   {
     key: 'stocks' as const,
     label: 'Ações Individuais',
     color: 'var(--chart-1)',
-    examples: 'Seleção própria + comunidade OGI'
+    examples: 'Seleção da comunidade OGI'
   },
   {
     key: 'gold' as const,
     label: 'Ouro',
     color: 'var(--chart-3)',
-    examples: 'IGLN, GLD'
+    examples: 'Reserva de valor'
   },
   {
     key: 'reits' as const,
     label: 'REITs',
     color: 'var(--chart-5)',
-    examples: 'IPRP, VNQ'
+    examples: 'Armazenamento, retalho'
   },
   {
     key: 'highRisk' as const,
     label: 'Alto Risco',
     color: 'var(--chart-4)',
-    examples: 'BTC, ETH (só percentual pequeno)'
+    examples: 'Cripto e ativos especulativos'
   }
 ]
 

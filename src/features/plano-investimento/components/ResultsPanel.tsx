@@ -1,5 +1,6 @@
 import { AllocationChart } from './AllocationChart'
 import { KpiCards } from './KpiCards'
+import { ProfileComparison } from './ProfileComparison'
 import { ProjectionChart } from './ProjectionChart'
 import { formatEuro, formatPercent } from '../lib/format'
 import { PROFILE_DESCRIPTIONS, PROFILE_LABELS } from '../lib/profiles'
@@ -18,7 +19,7 @@ const GOAL_LABELS: Record<string, string> = {
 }
 
 export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
-  const { userData, objectives, riskAssessment } = state
+  const { userData, objectives } = state
   const profileLabel = PROFILE_LABELS[plan.profile.adjustedProfile]
   const profileDescription = PROFILE_DESCRIPTIONS[plan.profile.adjustedProfile]
   const isFireGoal = objectives.goal === 'fire'
@@ -26,9 +27,11 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
   const summaryRows: [string, string][] = [
     ['Nome', userData.name || 'Sem nome'],
     ['Idade', String(userData.age ?? '-')],
+    ['Rendimento mensal líquido', userData.monthlyIncome != null ? formatEuro(userData.monthlyIncome) : '-'],
+    ['Capital já investido', userData.currentCapital != null ? formatEuro(userData.currentCapital) : formatEuro(0)],
     ['Objetivo', objectives.goal ? (GOAL_LABELS[objectives.goal] ?? objectives.goal) : '-'],
-    ['Horizonte', `${objectives.horizonYears} anos`],
-    ['Investimento mensal', `${userData.monthlyInvestment ?? '-'} EUR`],
+    ['Horizonte Temporal', `${objectives.horizonYears} anos`],
+    ['Investimento mensal', userData.monthlyInvestment != null ? formatEuro(userData.monthlyInvestment) : '-'],
     ['Retorno anual efetivo', formatPercent(plan.annualReturn)],
     ...(isFireGoal
       ? [
@@ -49,6 +52,13 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
         </p>
       </div>
 
+      <div className="rounded-xl border border-[#badcd2]/60 bg-[#e0f2ef]/40 px-4 py-3 dark:border-[#2b4e44]/60 dark:bg-[#13211d]/60">
+        <p className="text-xs leading-relaxed text-[#235a4a] dark:text-[#a0d8c8]">
+          <strong className="theme-heading">Nota legal:</strong> Esta ferramenta é educativa e não
+          constitui aconselhamento financeiro. Consulta um profissional qualificado antes de investir.
+        </p>
+      </div>
+
       <section className="rounded-2xl border border-[#1ea37a]/60 bg-gradient-to-br from-[#014b35] via-[#0a6645] to-[#179c74] p-6 text-white shadow-[0_8px_24px_rgba(1,75,53,0.3)]">
         <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#d8fff2]/80">
           Perfil final
@@ -57,14 +67,6 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
         <p className="mt-3 max-w-prose text-sm leading-relaxed text-[#effff8]/90">
           {profileDescription}
         </p>
-        <div className="mt-4 border-t border-white/15 pt-4">
-          <p className="text-xs text-[#d8fff2]/70">
-            Score base:{' '}
-            <strong className="text-white">{riskAssessment.rawScore}/20</strong>
-            {' · '}Perfil base:{' '}
-            <strong className="text-white">{PROFILE_LABELS[plan.profile.rawProfile]}</strong>
-          </p>
-        </div>
         {plan.profile.adjustments.length > 0 && (
           <ul className="mt-3 space-y-1 text-xs text-[#effff8]/80">
             {plan.profile.adjustments.map((adjustment) => (
@@ -99,13 +101,11 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
       <AllocationChart allocation={plan.allocation} />
       <ProjectionChart projections={plan.projections} fireNumber={plan.fireNumber} />
       <KpiCards state={state} plan={plan} />
-
-      <section className="rounded-xl border border-[#badcd2]/60 bg-[#e0f2ef]/40 px-5 py-4 dark:border-[#2b4e44]/60 dark:bg-[#13211d]/60">
-        <p className="text-xs leading-relaxed text-[#235a4a] dark:text-[#a0d8c8]">
-          <strong className="theme-heading">Nota legal:</strong> Esta ferramenta é educativa e não
-          constitui aconselhamento financeiro. Consulta um profissional qualificado antes de investir.
-        </p>
-      </section>
+      <ProfileComparison
+        currentProfile={plan.profile.adjustedProfile}
+        userData={userData}
+        objectives={objectives}
+      />
 
       <button
         type="button"

@@ -9,45 +9,45 @@ export const GOAL_OPTIONS: Array<{
 }> = [
   {
     value: 'accumulation',
-    title: 'Acumulacao de capital',
+    title: 'Acumulação de capital',
     description: 'Fazer crescer o teu capital ao longo do tempo.'
   },
   {
     value: 'passive_income',
     title: 'Rendimento extra mensal',
-    description: 'Gerar rendimento passivo com consistencia.'
+    description: 'Gerar rendimento passivo com consistência.'
   },
   {
     value: 'fire',
     title: 'Liberdade financeira (FIRE)',
-    description: 'Atingir independencia financeira total.'
+    description: 'Atingir independência financeira total.'
   }
 ]
 
 export const RISK_QUESTIONS: RiskQuestion[] = [
   {
     id: 'p1',
-    prompt: 'O teu investimento caiu 20% num mes. O que fazes?',
+    prompt: 'O teu investimento caiu 20% num mês. O que fazes?',
     options: [
       { label: 'Vendo tudo imediatamente', points: 1 },
       { label: 'Vendo parte para reduzir perdas', points: 2 },
-      { label: 'Nao faco nada, espero recuperar', points: 3 },
+      { label: 'Não faço nada, espero recuperar', points: 3 },
       { label: 'Aproveito para investir mais', points: 4 }
     ]
   },
   {
     id: 'p2',
-    prompt: 'Qual destas opcoes preferes?',
+    prompt: 'Imagina que tens 10.000€ para investir. O que preferes?',
     options: [
-      { label: 'Ganho garantido de 3%/ano', points: 1 },
-      { label: '70% chance de ganhar 7%/ano, 30% chance de perder 2%', points: 2 },
-      { label: '50% chance de ganhar 12%/ano, 50% chance de perder 5%', points: 3 },
-      { label: '30% chance de ganhar 25%/ano, 70% chance de perder 10%', points: 4 }
+      { label: 'Garantir que nunca perco dinheiro, mesmo que cresça pouco', points: 1 },
+      { label: 'Crescer de forma estável, aceitando perder um pouco num mau ano', points: 2 },
+      { label: 'Arriscar perdas maiores em anos maus para ganhar mais a longo prazo', points: 3 },
+      { label: 'Maximizar o crescimento — aceito perdas significativas se o potencial for alto', points: 4 }
     ]
   },
   {
     id: 'p3',
-    prompt: 'Ha quanto tempo investes?',
+    prompt: 'Há quanto tempo investes?',
     options: [
       { label: 'Nunca investi', points: 1 },
       { label: 'Menos de 1 ano', points: 2 },
@@ -57,12 +57,12 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
   },
   {
     id: 'p4',
-    prompt: 'Se precisasses do dinheiro investido em emergencia, como te sentirias?',
+    prompt: 'Imagina que encontras algo que queres muito comprar — uma viagem, um carro, uma remodelação. O que fazes?',
     options: [
-      { label: 'Preciso de acesso imediato sempre', points: 1 },
-      { label: 'Posso esperar algumas semanas', points: 2 },
-      { label: 'Consigo esperar meses', points: 3 },
-      { label: 'Nao vou precisar deste dinheiro por muitos anos', points: 4 }
+      { label: 'Vendo os investimentos para pagar — o dinheiro está lá para isso', points: 1 },
+      { label: 'Penso em vender uma parte, mas fico com algum investido', points: 2 },
+      { label: 'Só vendo se não houver mesmo outra forma de pagar', points: 3 },
+      { label: 'Nunca tocaria nos investimentos — arranjo outra forma', points: 4 }
     ]
   },
   {
@@ -70,9 +70,9 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
     prompt: 'Como descreves os teus conhecimentos de investimento?',
     options: [
       { label: 'Nenhum, sou totalmente iniciante', points: 1 },
-      { label: 'Basico, sei o que sao ETFs e acoes', points: 2 },
-      { label: 'Intermedio, invisto regularmente', points: 3 },
-      { label: 'Avancado, analiso mercados e faco gestao ativa', points: 4 }
+      { label: 'Básico, sei o que são ETFs e ações', points: 2 },
+      { label: 'Intermédio, invisto regularmente', points: 3 },
+      { label: 'Avançado, analiso mercados e faço gestão ativa', points: 4 }
     ]
   }
 ]
@@ -100,12 +100,12 @@ export function getUserDataFields(userData: UserData) {
   return [
     { key: 'name', value: userData.name ?? '', label: 'Nome (opcional)' },
     { key: 'age', value: userData.age, label: 'Idade' },
-    { key: 'monthlyIncome', value: userData.monthlyIncome, label: 'Rendimento liquido mensal' },
+    { key: 'monthlyIncome', value: userData.monthlyIncome, label: 'Rendimento líquido mensal' },
     {
       key: 'monthlyInvestment',
       value: userData.monthlyInvestment,
-      label: 'Quanto consegues investir por mes'
+      label: 'Quanto consegues investir por mês'
     },
-    { key: 'currentCapital', value: userData.currentCapital, label: 'Capital ja investido' }
+    { key: 'currentCapital', value: userData.currentCapital, label: 'Capital já investido' }
   ]
 }

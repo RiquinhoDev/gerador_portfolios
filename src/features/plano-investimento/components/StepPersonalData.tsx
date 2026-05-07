@@ -106,7 +106,7 @@ export function StepPersonalData({ value, errors, onChange }: StepPersonalDataPr
         <NumberInput
           id="age"
           label="Idade"
-          helperText="Entre 18 a 80 anos."
+          helperText="A partir de 18 anos."
           value={value.age}
           onChange={(next) => onChange({ ...value, age: next })}
           error={errors.age}
@@ -116,7 +116,7 @@ export function StepPersonalData({ value, errors, onChange }: StepPersonalDataPr
         <NumberInput
           id="monthly-income"
           label="Rendimento líquido mensal (EUR)"
-          helperText="Valor mensal líquido."
+          helperText="O teu salário ou rendimento mensal já descontados impostos."
           value={value.monthlyIncome}
           onChange={(next) => onChange({ ...value, monthlyIncome: next })}
           error={errors.monthlyIncome}
@@ -136,7 +136,7 @@ export function StepPersonalData({ value, errors, onChange }: StepPersonalDataPr
         <NumberInput
           id="current-capital"
           label="Já tens capital investido? (EUR)"
-          helperText="Podes manter 0 se ainda não investiste."
+          helperText="Coloca 0 se ainda não investiste."
           value={value.currentCapital}
           onChange={(next) => onChange({ ...value, currentCapital: next })}
           error={errors.currentCapital}

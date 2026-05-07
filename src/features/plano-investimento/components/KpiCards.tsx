@@ -34,26 +34,31 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
   const items = [
     {
       label: `Capital em ${state.objectives.horizonYears} anos`,
-      value: formatEuro(horizonProjection.totalValue)
+      value: formatEuro(horizonProjection.totalValue),
+      note: 'O que tens acumulado no final do horizonte (investido + juros)'
     },
     {
-      label: 'Retorno total estimado',
-      value: formatEuro(horizonProjection.returns)
+      label: 'Ganhos dos juros compostos',
+      value: formatEuro(horizonProjection.returns),
+      note: `Do total, ${formatEuro(horizonProjection.totalInvested)} és tu a investir; o resto é o efeito dos juros`
     },
     ...(isFireGoal && plan.yearsToFire
-      ? [{ label: 'Anos até FIRE', value: `${plan.yearsToFire}` }]
+      ? [{ label: 'Anos até FIRE', value: `${plan.yearsToFire}`, note: 'Estimativa até atingires a meta de independência financeira' }]
       : []),
     {
       label: 'Renda passiva mensal estimada',
-      value: formatEuro(passiveIncomeEstimate)
+      value: formatEuro(passiveIncomeEstimate),
+      note: 'Regra dos 4%: retirar 4% ao ano do capital acumulado sem esgotar o fundo'
     },
     {
-      label: 'Ratio total acumulado / investido',
-      value: `${ratio.toFixed(2)}x`
+      label: 'Multiplicador do investimento',
+      value: `${ratio.toFixed(2)}x`,
+      note: 'Por cada euro investido, recebes este múltiplo de volta no final'
     },
     {
       label: 'Se começasses 5 anos antes',
-      value: `${formatEuro(earlyStartValue)} (${formatPercent(plan.annualReturn)} a.a.)`
+      value: formatEuro(earlyStartValue),
+      note: `Com mais 5 anos de juros compostos a ${formatPercent(plan.annualReturn)} a.a. — o tempo é o teu maior aliado`
     }
   ]
 
@@ -84,6 +89,11 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
             <p className="tabular-nums relative mt-3 text-2xl font-extrabold leading-none tracking-[-0.02em] text-[#014b35] dark:text-[#f3fff9]">
               {item.value}
             </p>
+            {item.note && (
+              <p className="relative mt-2 text-xs leading-relaxed text-[#235a4a]/80 dark:text-[#a0d8c8]/80">
+                {item.note}
+              </p>
+            )}
           </article>
         ))}
       </div>

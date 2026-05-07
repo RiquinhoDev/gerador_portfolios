@@ -42,9 +42,22 @@ export function ProjectionChart({ projections, fireNumber }: ProjectionChartProp
 
   return (
     <section className="rounded-xl border border-[#badcd2] bg-white/90 px-5 py-5 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
-      <h3 className="theme-heading mb-4 text-sm font-bold uppercase tracking-[0.07em]">
-        Projeção de crescimento
-      </h3>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <h3 className="theme-heading text-sm font-bold uppercase tracking-[0.07em]">
+          Projeção de crescimento
+        </h3>
+        <div className="flex items-center gap-4 text-xs text-[#235a4a] dark:text-[#a0d8c8]">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: 'var(--chart-1)', opacity: 0.7 }} />
+            O que investes
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: 'var(--chart-2)' }} />
+            Ganhos dos juros compostos
+          </span>
+        </div>
+      </div>
+      <p className="theme-muted mb-3 text-xs">O total da barra = capital investido + retorno acumulado.</p>
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ left: 8, right: 16, top: 16, bottom: 0 }}>

@@ -5,13 +5,13 @@ export const RISK_PROFILE_ORDER: RiskProfile[] = ['conservative', 'moderate', 'd
 export const PROFILE_LABELS: Record<RiskProfile, string> = {
   conservative: 'Conservador',
   moderate: 'Moderado',
-  dynamic: 'Dinamico',
+  dynamic: 'Dinâmico',
   aggressive: 'Agressivo'
 }
 
 export const PROFILE_DESCRIPTIONS: Record<RiskProfile, string> = {
   conservative: 'Prioridade em preservar capital com crescimento moderado.',
-  moderate: 'Equilibrio entre crescimento e seguranca.',
+  moderate: 'Equilíbrio entre crescimento e segurança.',
   dynamic: 'Aceita volatilidade para retornos superiores.',
   aggressive: 'Foco em maximizar retorno com risco elevado.'
 }
