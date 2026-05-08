@@ -9,33 +9,57 @@ interface KpiCardsProps {
 
 function getHorizonProjection(plan: InvestmentPlan, horizonYears: number) {
   return (
-    plan.projections.find((projection) => projection.year === horizonYears) ??
+    plan.projections.find((p) => p.year === horizonYears) ??
     plan.projections[plan.projections.length - 1]
   )
 }
 
 export function KpiCards({ state, plan }: KpiCardsProps) {
-  const horizonProjection = getHorizonProjection(plan, state.objectives.horizonYears)
+  const { objectives, userData } = state
+  const horizonProjection = getHorizonProjection(plan, objectives.horizonYears)
+  const currentCapital = userData.currentCapital ?? 0
+  const monthlyInvestment = userData.monthlyInvestment ?? 0
+  const monthlyIncome = userData.monthlyIncome ?? 0
+
   const ratio =
     horizonProjection.totalInvested > 0
       ? horizonProjection.totalValue / horizonProjection.totalInvested
       : 0
 
+  // P9 fix: "tivesses começado 5 anos mais cedo" — mesmos inputs, horizonte+5
   const earlyStartValue = computeFutureValue(
-    state.userData.currentCapital ?? 0,
-    state.userData.monthlyInvestment ?? 0,
-    state.objectives.horizonYears + 5,
+    currentCapital,
+    monthlyInvestment,
+    objectives.horizonYears + 5,
     plan.annualReturn
   )
 
-  const passiveIncomeEstimate = (horizonProjection.totalValue * 0.04) / 12
-  const isFireGoal = state.objectives.goal === 'fire'
+  // P10 fix: cenário B — capital fica parado 1 ano, depois investe horizonYears-1
+  const costOfWaiting =
+    objectives.horizonYears > 1
+      ? horizonProjection.totalValue -
+        computeFutureValue(
+          currentCapital,
+          monthlyInvestment,
+          objectives.horizonYears - 1,
+          plan.annualReturn
+        )
+      : null
+
+  const savingsRate =
+    monthlyIncome > 0 ? (monthlyInvestment / monthlyIncome) * 100 : null
+
+  // rendimento mensal no horizonte com taxa ajustada ao perfil (P6)
+  const monthlyIncomeAtHorizon = (horizonProjection.totalValue * plan.withdrawalRate) / 12
+
+  const isFireGoal = objectives.goal === 'fire'
+  const isPassiveGoal = objectives.goal === 'passive_income'
 
   const items = [
     {
-      label: `Capital em ${state.objectives.horizonYears} anos`,
+      label: `Capital em ${objectives.horizonYears} anos`,
       value: formatEuro(horizonProjection.totalValue),
-      note: 'O que tens acumulado no final do horizonte (investido + juros)'
+      note: 'Total acumulado no final do horizonte (investido + juros compostos)'
     },
     {
       label: 'Ganhos dos juros compostos',
@@ -43,12 +67,27 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
       note: `Do total, ${formatEuro(horizonProjection.totalInvested)} és tu a investir; o resto é o efeito dos juros`
     },
     ...(isFireGoal && plan.yearsToFire
-      ? [{ label: 'Anos até FIRE', value: `${plan.yearsToFire}`, note: 'Estimativa até atingires a meta de independência financeira' }]
+      ? [
+          {
+            label: 'Anos até independência financeira',
+            value: `${plan.yearsToFire} anos`,
+            note: `Estimativa até atingires os ${plan.fireNumber ? formatEuro(plan.fireNumber) : '—'} necessários para a independência`
+          }
+        ]
+      : []),
+    ...(isPassiveGoal && plan.yearsToPassiveIncome
+      ? [
+          {
+            label: 'Anos até atingires a meta',
+            value: `${plan.yearsToPassiveIncome} anos`,
+            note: `Estimativa até gerares os ${objectives.passiveMonthlyTarget ? formatEuro(objectives.passiveMonthlyTarget) : '—'}/mês que definiste`
+          }
+        ]
       : []),
     {
-      label: 'Renda passiva mensal estimada',
-      value: formatEuro(passiveIncomeEstimate),
-      note: 'Regra dos 4%: retirar 4% ao ano do capital acumulado sem esgotar o fundo'
+      label: isFireGoal ? 'Rendimento mensal na independência' : 'Rendimento extra mensal',
+      value: formatEuro(monthlyIncomeAtHorizon),
+      note: `Regra dos ${(plan.withdrawalRate * 100).toFixed(1)}%: retirada sustentável sem esgotar o capital`
     },
     {
       label: 'Multiplicador do investimento',
@@ -56,10 +95,33 @@ export function KpiCards({ state, plan }: KpiCardsProps) {
       note: 'Por cada euro investido, recebes este múltiplo de volta no final'
     },
     {
-      label: 'Se começasses 5 anos antes',
+      label: 'Se tivesses começado 5 anos mais cedo',
       value: formatEuro(earlyStartValue),
-      note: `Com mais 5 anos de juros compostos a ${formatPercent(plan.annualReturn)} a.a. — o tempo é o teu maior aliado`
-    }
+      note: `Resultado estimado com o mesmo plano mas iniciado 5 anos antes — a ${formatPercent(plan.annualReturn)} a.a. o tempo é o teu maior aliado`
+    },
+    ...(savingsRate !== null
+      ? [
+          {
+            label: 'Taxa de poupança',
+            value: `${savingsRate.toFixed(1)}%`,
+            note:
+              savingsRate >= 20
+                ? 'Excelente — estás acima dos 20% recomendados pela maioria dos planos financeiros'
+                : savingsRate >= 10
+                  ? 'Bom ponto de partida — tenta aumentar gradualmente até atingir 20% do rendimento'
+                  : 'Tenta aumentar progressivamente — mesmo pequenos aumentos têm grande impacto a longo prazo'
+          }
+        ]
+      : []),
+    ...(costOfWaiting !== null
+      ? [
+          {
+            label: 'Custo de adiar 1 ano',
+            value: formatEuro(costOfWaiting),
+            note: 'Diferença entre começar hoje e começar daqui a 1 ano com o mesmo plano — cada mês conta'
+          }
+        ]
+      : [])
   ]
 
   return (

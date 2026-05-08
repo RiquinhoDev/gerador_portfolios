@@ -23,6 +23,13 @@ export const PROFILE_ANNUAL_RETURNS: Record<RiskProfile, number> = {
   aggressive: 0.1
 }
 
+export const PROFILE_WITHDRAWAL_RATES: Record<RiskProfile, number> = {
+  conservative: 0.03,
+  moderate: 0.035,
+  dynamic: 0.04,
+  aggressive: 0.045
+}
+
 export const PROFILE_ALLOCATIONS: Record<RiskProfile, AssetAllocation> = {
   conservative: {
     globalETFs: 50,

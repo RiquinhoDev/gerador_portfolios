@@ -1,4 +1,10 @@
-import type { InvestmentGoal, RiskQuestion, UserData, WizardState } from '../types'
+import type { CapacityAssessment, InvestmentGoal, RiskQuestion, UserData, WizardState } from '../types'
+
+export const INITIAL_CAPACITY_ASSESSMENT: CapacityAssessment = {
+  emergencyFund: null,
+  debtLevel: null,
+  incomeStability: null
+}
 
 export const WIZARD_TOTAL_STEPS = 4
 
@@ -88,12 +94,14 @@ export const INITIAL_WIZARD_STATE: WizardState = {
   objectives: {
     goal: null,
     horizonYears: 15,
-    fireMonthlyTarget: null
+    fireMonthlyTarget: null,
+    passiveMonthlyTarget: null
   },
   riskAssessment: {
     answers: Array.from({ length: RISK_QUESTIONS.length }, () => 0),
     rawScore: 0
-  }
+  },
+  capacityAssessment: INITIAL_CAPACITY_ASSESSMENT
 }
 
 export function getUserDataFields(userData: UserData) {

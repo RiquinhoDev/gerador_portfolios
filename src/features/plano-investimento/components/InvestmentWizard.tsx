@@ -1,8 +1,13 @@
 import { useMemo, useState } from 'react'
 import { buildInvestmentPlan } from '../lib/calculations'
-import { INITIAL_WIZARD_STATE, RISK_QUESTIONS, WIZARD_TOTAL_STEPS } from '../lib/constants'
-import { calculateRawRiskScore, hasAllRiskAnswers } from '../lib/risk-scoring'
-import type { Objectives, UserData, WizardState } from '../types'
+import {
+  INITIAL_CAPACITY_ASSESSMENT,
+  INITIAL_WIZARD_STATE,
+  RISK_QUESTIONS,
+  WIZARD_TOTAL_STEPS
+} from '../lib/constants'
+import { calculateRawRiskScore, hasAllCapacityAnswers, hasAllRiskAnswers } from '../lib/risk-scoring'
+import type { CapacityAssessment, Objectives, UserData, WizardState } from '../types'
 import { ProgressBar } from './ProgressBar'
 import { ResultsPanel } from './ResultsPanel'
 import { StepIntro } from './StepIntro'
@@ -14,6 +19,7 @@ type PersonalDataErrors = Partial<Record<keyof UserData, string>>
 type ObjectivesErrors = {
   goal?: string
   fireMonthlyTarget?: string
+  passiveMonthlyTarget?: string
 }
 
 export function InvestmentWizard() {
@@ -29,23 +35,35 @@ export function InvestmentWizard() {
     [state.riskAssessment.answers]
   )
   const investmentPlan = useMemo(
-    () => buildInvestmentPlan(state.userData, state.objectives, rawScore),
-    [state.objectives, state.userData, rawScore]
+    () =>
+      buildInvestmentPlan(
+        state.userData,
+        state.objectives,
+        rawScore,
+        state.capacityAssessment
+      ),
+    [state.objectives, state.userData, rawScore, state.capacityAssessment]
   )
 
   const isResultsStep = step === WIZARD_TOTAL_STEPS
 
   function validatePersonalData(value: UserData): boolean {
     const nextErrors: PersonalDataErrors = {}
+    const income = value.monthlyIncome ?? 0
+    const investment = value.monthlyInvestment ?? 0
 
     if ((value.name ?? '').length > 50) nextErrors.name = 'Nome máximo 50 caracteres.'
-    if (value.age === null || value.age < 18) nextErrors.age = 'Idade mínima: 18 anos.'
+    if (value.age === null || value.age < 18 || value.age > 100)
+      nextErrors.age = 'Idade entre 18 e 100 anos.'
     if (value.monthlyIncome === null || value.monthlyIncome < 0)
       nextErrors.monthlyIncome = 'Rendimento deve ser igual ou superior a 0.'
     if (value.monthlyInvestment === null || value.monthlyInvestment < 25)
       nextErrors.monthlyInvestment = 'Investimento mensal mínimo: 25 EUR.'
     if (value.currentCapital === null || value.currentCapital < 0)
       nextErrors.currentCapital = 'Capital atual deve ser igual ou superior a 0.'
+    if (income > 0 && investment > income)
+      nextErrors.monthlyInvestment =
+        'O investimento mensal não pode ser superior ao rendimento líquido.'
 
     setPersonalDataErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
@@ -55,20 +73,29 @@ export function InvestmentWizard() {
     const nextErrors: ObjectivesErrors = {}
 
     if (!value.goal) nextErrors.goal = 'Escolhe um objetivo principal.'
+    if (value.goal === 'fire' && (value.fireMonthlyTarget === null || value.fireMonthlyTarget <= 0))
+      nextErrors.fireMonthlyTarget =
+        'Define o rendimento mensal desejado na independência financeira (valor superior a 0).'
     if (
-      (value.goal === 'fire' || value.goal === 'passive_income') &&
-      (value.fireMonthlyTarget === null || value.fireMonthlyTarget <= 0)
-    ) {
-      nextErrors.fireMonthlyTarget = 'Define a renda passiva mensal desejada (valor superior a 0).'
-    }
+      value.goal === 'passive_income' &&
+      (value.passiveMonthlyTarget === null || value.passiveMonthlyTarget <= 0)
+    )
+      nextErrors.passiveMonthlyTarget =
+        'Define o rendimento extra mensal que pretendes (valor superior a 0).'
 
     setObjectivesErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
 
-  function validateRiskAnswers(answers: number[]): boolean {
+  function validateRiskStep(answers: number[], capacity: CapacityAssessment): boolean {
     if (!hasAllRiskAnswers(answers)) {
       setRiskError('Responde às 5 perguntas antes de continuar.')
+      return false
+    }
+    if (!hasAllCapacityAnswers(capacity)) {
+      setRiskError(
+        'Responde às 3 perguntas de capacidade de risco antes de continuar.'
+      )
       return false
     }
     setRiskError('')
@@ -80,7 +107,7 @@ export function InvestmentWizard() {
     if (step === 2 && !validateObjectives(state.objectives)) return
 
     if (step === 3) {
-      if (!validateRiskAnswers(state.riskAssessment.answers)) return
+      if (!validateRiskStep(state.riskAssessment.answers, state.capacityAssessment)) return
       setState((current) => ({
         ...current,
         riskAssessment: {
@@ -139,6 +166,7 @@ export function InvestmentWizard() {
             <StepRiskTolerance
               answers={state.riskAssessment.answers}
               currentQuestionIndex={riskQuestionIndex}
+              capacity={state.capacityAssessment}
               error={riskError}
               onQuestionChange={setRiskQuestionIndex}
               onAnswerChange={(questionIndex, points) => {
@@ -154,10 +182,13 @@ export function InvestmentWizard() {
                     }
                   }
                 })
-
                 if (riskQuestionIndex < RISK_QUESTIONS.length - 1) {
                   setRiskQuestionIndex((current) => current + 1)
                 }
+                setRiskError('')
+              }}
+              onCapacityChange={(capacity) => {
+                setState((current) => ({ ...current, capacityAssessment: capacity }))
                 setRiskError('')
               }}
             />

@@ -1,22 +1,96 @@
 import { RISK_QUESTIONS } from '../lib/constants'
+import type { CapacityAssessment, DebtLevel, EmergencyFundLevel, IncomeStability } from '../types'
 
 interface StepRiskToleranceProps {
   answers: number[]
   currentQuestionIndex: number
+  capacity: CapacityAssessment
   error?: string
   onAnswerChange: (questionIndex: number, points: number) => void
   onQuestionChange: (questionIndex: number) => void
+  onCapacityChange: (next: CapacityAssessment) => void
+}
+
+const allRiskAnswered = (answers: number[]) =>
+  answers.every((a) => a >= 1 && a <= 4)
+
+const EMERGENCY_OPTIONS: { value: EmergencyFundLevel; label: string }[] = [
+  { value: 'none', label: 'Não tenho fundo de emergência' },
+  { value: 'lt3', label: 'Menos de 3 meses de despesas' },
+  { value: '3to6', label: '3 a 6 meses de despesas' },
+  { value: 'gt6', label: 'Mais de 6 meses de despesas' }
+]
+
+const DEBT_OPTIONS: { value: DebtLevel; label: string }[] = [
+  { value: 'high', label: 'Sim — crédito pessoal, cartão ou outro de curto prazo' },
+  { value: 'moderate', label: 'Sim — crédito habitação ou dívida de longo prazo' },
+  { value: 'low', label: 'Pouca dívida relevante' },
+  { value: 'none', label: 'Sem dívidas relevantes' }
+]
+
+const STABILITY_OPTIONS: { value: IncomeStability; label: string }[] = [
+  { value: 'unstable', label: 'Instável — frequentemente incerto' },
+  { value: 'variable', label: 'Variável — muda com frequência' },
+  { value: 'stable', label: 'Relativamente estável' },
+  { value: 'very_stable', label: 'Muito estável — emprego público ou contrato longo' }
+]
+
+function CapacitySelect<T extends string>({
+  label,
+  options,
+  value,
+  onChange
+}: {
+  label: string
+  options: { value: T; label: string }[]
+  value: T | null
+  onChange: (v: T) => void
+}) {
+  return (
+    <fieldset className="space-y-2">
+      <legend className="theme-heading text-sm font-semibold leading-snug">{label}</legend>
+      <div className="space-y-2">
+        {options.map((opt) => {
+          const selected = value === opt.value
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onChange(opt.value)}
+              className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-all duration-150
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]
+                ${
+                  selected
+                    ? 'border-[#00ffb3] bg-[#00ffb3] font-semibold text-[#05281d] shadow-[0_2px_8px_rgba(0,255,179,0.2)]'
+                    : `border-[#badcd2] bg-white text-[#014b35]
+                       hover:border-[#45d5aa] hover:bg-[#e0f2ef]/50
+                       dark:border-[#2b4e44] dark:bg-[#13211d] dark:text-[#f3fff9]
+                       dark:hover:border-[#45d5aa]`
+                }`}
+            >
+              {opt.label}
+            </button>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
 }
 
 export function StepRiskTolerance({
   answers,
   currentQuestionIndex,
+  capacity,
   error,
   onAnswerChange,
-  onQuestionChange
+  onQuestionChange,
+  onCapacityChange
 }: StepRiskToleranceProps) {
   const currentQuestion = RISK_QUESTIONS[currentQuestionIndex]
   const selectedValue = answers[currentQuestionIndex]
+  const showCapacity = allRiskAnswered(answers)
 
   return (
     <div>
@@ -99,6 +173,40 @@ export function StepRiskTolerance({
             Próxima pergunta
           </button>
         </div>
+
+        {showCapacity && (
+          <section className="space-y-5 rounded-xl border border-[#badcd2] bg-white/90 p-6 dark:border-[#2b4e44] dark:bg-[#0f1715]/85">
+            <div>
+              <p className="theme-heading text-sm font-bold uppercase tracking-[0.07em]">
+                Capacidade de risco
+              </p>
+              <p className="theme-muted mt-1 text-xs leading-relaxed">
+                Estas 3 perguntas ajustam o teu perfil com base na tua situação financeira real.
+              </p>
+            </div>
+
+            <CapacitySelect
+              label="Tens fundo de emergência?"
+              options={EMERGENCY_OPTIONS}
+              value={capacity.emergencyFund}
+              onChange={(v) => onCapacityChange({ ...capacity, emergencyFund: v })}
+            />
+
+            <CapacitySelect
+              label="Tens dívidas relevantes?"
+              options={DEBT_OPTIONS}
+              value={capacity.debtLevel}
+              onChange={(v) => onCapacityChange({ ...capacity, debtLevel: v })}
+            />
+
+            <CapacitySelect
+              label="O teu rendimento é estável?"
+              options={STABILITY_OPTIONS}
+              value={capacity.incomeStability}
+              onChange={(v) => onCapacityChange({ ...capacity, incomeStability: v })}
+            />
+          </section>
+        )}
 
         {error && (
           <p role="alert" className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400">

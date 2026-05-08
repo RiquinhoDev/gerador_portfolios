@@ -1,9 +1,12 @@
+import { calculateFireNumber } from '../lib/calculations'
+import { formatEuro } from '../lib/format'
 import { GOAL_OPTIONS } from '../lib/constants'
 import type { Objectives } from '../types'
 
 type ObjectivesErrors = {
   goal?: string
   fireMonthlyTarget?: string
+  passiveMonthlyTarget?: string
 }
 
 interface StepObjectivesProps {
@@ -47,7 +50,15 @@ export function StepObjectives({ value, errors, onChange }: StepObjectivesProps)
                   type="button"
                   role="radio"
                   aria-checked={isActive}
-                  onClick={() => onChange({ ...value, goal: goal.value })}
+                  onClick={() =>
+                    onChange({
+                      ...value,
+                      goal: goal.value,
+                      fireMonthlyTarget: goal.value !== 'fire' ? null : value.fireMonthlyTarget,
+                      passiveMonthlyTarget:
+                        goal.value !== 'passive_income' ? null : value.passiveMonthlyTarget
+                    })
+                  }
                   className={`relative rounded-xl border p-5 text-left transition-all duration-200
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#45d5aa]
                     ${
@@ -112,10 +123,11 @@ export function StepObjectives({ value, errors, onChange }: StepObjectivesProps)
           </div>
         </div>
 
-        {(value.goal === 'fire' || value.goal === 'passive_income') && (
+        {/* FIRE target */}
+        {value.goal === 'fire' && (
           <div className="space-y-2 rounded-xl border border-[#badcd2] bg-[#e0f2ef]/70 p-5 dark:border-[#2b4e44] dark:bg-[#13211d]">
             <label htmlFor="fire-target" className="theme-heading block text-sm font-semibold">
-              Quanto queres receber por mês em renda passiva (EUR)
+              Rendimento mensal que precisas na independência financeira (EUR)
             </label>
             <input
               id="fire-target"
@@ -126,9 +138,22 @@ export function StepObjectives({ value, errors, onChange }: StepObjectivesProps)
                 onChange({ ...value, fireMonthlyTarget: parseNullableNumber(event.target.value) })
               }
               aria-invalid={Boolean(errors.fireMonthlyTarget)}
-              aria-describedby={errors.fireMonthlyTarget ? 'fire-target-error' : undefined}
+              aria-describedby={errors.fireMonthlyTarget ? 'fire-target-error' : 'fire-target-hint'}
               className="theme-input w-full rounded-lg px-4 py-2.5 outline-none ring-0 transition focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
             />
+            {value.fireMonthlyTarget && value.fireMonthlyTarget > 0 ? (
+              <p id="fire-target-hint" className="text-xs text-[#235a4a] dark:text-[#a0d8c8]">
+                Meta FIRE: precisas de acumular{' '}
+                <strong className="text-[#014b35] dark:text-[#00ffb3]">
+                  {formatEuro(calculateFireNumber(value.fireMonthlyTarget))}
+                </strong>{' '}
+                (estimativa — ajustada ao teu perfil nos resultados)
+              </p>
+            ) : (
+              <p id="fire-target-hint" className="text-xs text-[#235a4a]/70 dark:text-[#a0d8c8]/70">
+                Indica o rendimento mensal que precisas para deixar de trabalhar por necessidade.
+              </p>
+            )}
             {errors.fireMonthlyTarget && (
               <p id="fire-target-error" role="alert" className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -136,6 +161,54 @@ export function StepObjectives({ value, errors, onChange }: StepObjectivesProps)
                   <path d="M6 4v3M6 8.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
                 {errors.fireMonthlyTarget}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Passive income target */}
+        {value.goal === 'passive_income' && (
+          <div className="space-y-2 rounded-xl border border-[#badcd2] bg-[#e0f2ef]/70 p-5 dark:border-[#2b4e44] dark:bg-[#13211d]">
+            <label htmlFor="passive-target" className="theme-heading block text-sm font-semibold">
+              Quanto queres receber por mês em rendimento extra (EUR)
+            </label>
+            <input
+              id="passive-target"
+              type="number"
+              min={0}
+              value={value.passiveMonthlyTarget ?? ''}
+              onChange={(event) =>
+                onChange({
+                  ...value,
+                  passiveMonthlyTarget: parseNullableNumber(event.target.value)
+                })
+              }
+              aria-invalid={Boolean(errors.passiveMonthlyTarget)}
+              aria-describedby={
+                errors.passiveMonthlyTarget ? 'passive-target-error' : 'passive-target-hint'
+              }
+              className="theme-input w-full rounded-lg px-4 py-2.5 outline-none ring-0 transition focus-visible:ring-2 focus-visible:ring-[#45d5aa]"
+            />
+            {value.passiveMonthlyTarget && value.passiveMonthlyTarget > 0 ? (
+              <p id="passive-target-hint" className="text-xs text-[#235a4a] dark:text-[#a0d8c8]">
+                Capital necessário:{' '}
+                <strong className="text-[#014b35] dark:text-[#00ffb3]">
+                  {formatEuro(calculateFireNumber(value.passiveMonthlyTarget))}
+                </strong>{' '}
+                — mostraremos quando o atinges nas projeções.
+              </p>
+            ) : (
+              <p id="passive-target-hint" className="text-xs text-[#235a4a]/70 dark:text-[#a0d8c8]/70">
+                Ex: 250€, 500€ ou 1.000€/mês. Usamos este valor para calcular quando atinges a meta.
+              </p>
+            )}
+            {errors.passiveMonthlyTarget && (
+              <p id="passive-target-error" role="alert" className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M6 4v3M6 8.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                {errors.passiveMonthlyTarget}
               </p>
             )}
           </div>

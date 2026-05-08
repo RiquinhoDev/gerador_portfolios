@@ -1,5 +1,6 @@
 import { AllocationChart } from './AllocationChart'
 import { KpiCards } from './KpiCards'
+import { NextSteps } from './NextSteps'
 import { ProfileComparison } from './ProfileComparison'
 import { ProjectionChart } from './ProjectionChart'
 import { formatEuro, formatPercent } from '../lib/format'
@@ -59,6 +60,22 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
         </p>
       </div>
 
+      {plan.profile.warnings.length > 0 && (
+        <section className="rounded-xl border border-amber-300/60 bg-amber-50/80 px-5 py-4 dark:border-amber-700/50 dark:bg-amber-900/20">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.07em] text-amber-700 dark:text-amber-400">
+            Atenção — pontos a considerar
+          </p>
+          <ul className="space-y-2">
+            {plan.profile.warnings.map((warning) => (
+              <li key={warning} className="flex items-start gap-2 text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+                <span className="mt-0.5 shrink-0 text-amber-500" aria-hidden="true">⚠</span>
+                {warning}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="rounded-2xl border border-[#1ea37a]/60 bg-gradient-to-br from-[#014b35] via-[#0a6645] to-[#179c74] p-6 text-white shadow-[0_8px_24px_rgba(1,75,53,0.3)]">
         <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#d8fff2]/80">
           Perfil final
@@ -99,8 +116,9 @@ export function ResultsPanel({ state, plan, onReset }: ResultsPanelProps) {
       </section>
 
       <AllocationChart allocation={plan.allocation} />
-      <ProjectionChart projections={plan.projections} fireNumber={plan.fireNumber} />
+      <ProjectionChart plan={plan} />
       <KpiCards state={state} plan={plan} />
+      <NextSteps profile={plan.profile.adjustedProfile} />
       <ProfileComparison
         currentProfile={plan.profile.adjustedProfile}
         userData={userData}

@@ -8,7 +8,8 @@
       "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(yarn build *)",
-      "Bash(ls \"/mnt/c/Users/User/Desktop/HUB Backups/Janeiro - 2025/Riquinho/api/Front/Comunidade/gerador_portfolios/\" 2>&1)"
+      "Bash(ls \"/mnt/c/Users/User/Desktop/HUB Backups/Janeiro - 2025/Riquinho/api/Front/Comunidade/gerador_portfolios/\" 2>&1)",
+      "Bash(npx jest *)"
     ]
   }
 }
